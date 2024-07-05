@@ -3,9 +3,10 @@ import { initialCards } from "./cards.js";
 import { createCard, deleteCard, likeCard } from "./components/card.js";
 import { openPopup, closePopup } from "./components/modal.js";
 
+const popups = document.querySelectorAll('.popup');
 const cardsContainer = document.querySelector(".places__list");
 const popupEdit = document.querySelector(".popup_type_edit");
-const popupNewcard = document.querySelector(".popup_type_new-card");
+const popupNewCard = document.querySelector(".popup_type_new-card");
 const buttonEdit = document.querySelector(".profile__edit-button");
 const buttonAdd = document.querySelector(".profile__add-button");
 const profileTitle = document.querySelector(".profile__title");
@@ -23,7 +24,7 @@ const popupImg = document.querySelector(".popup_type_image");
 const image = popupImg.querySelector(".popup__image");
 const popupParagraf = popupImg.querySelector(".popup__caption");
 
-const callbacksCard = { deleteCard, likeCard, popupImage };
+const cardCallbacks = { deleteCard, likeCard, popupImage };
 
 initialCards.forEach(function (element) {
   const cardName = element.name;
@@ -34,7 +35,7 @@ initialCards.forEach(function (element) {
 //функция добавления картчки в определенное место в списке
 
 function renderCard(cardName, cardImg, method = "prepend") {
-  const cardElement = createCard(cardName, cardImg, callbacksCard);
+  const cardElement = createCard(cardName, cardImg, cardCallbacks);
   cardsContainer[method](cardElement);
 }
 
@@ -47,6 +48,19 @@ function popupImage(cardImg, cardName) {
   openPopup(popupImg);
 }
 
+// закрытие попапа при нажатии на крестик и оверлэй
+
+popups.forEach((popup) => {
+  popup.addEventListener('mousedown', (evt) => {
+      if (evt.target.classList.contains('popup_is-opened')) {
+          closePopup(popup)
+      }
+      if (evt.target.classList.contains('popup__close')) {
+        closePopup(popup)
+      }
+  })
+})
+
 // нажатие на редоктирование профиля
 
 buttonEdit.addEventListener("click", function () {
@@ -58,7 +72,7 @@ buttonEdit.addEventListener("click", function () {
 // нажатие на кнопку добавления новой карточки
 
 buttonAdd.addEventListener("click", function () {
-  openPopup(popupNewcard);
+  openPopup(popupNewCard);
 });
 
 // функция редактирования профиля
@@ -67,18 +81,18 @@ function handleProfileFormSubmit(evt) {
   evt.preventDefault();
   profileTitle.textContent = nameInput.value;
   profileDescription.textContent = jobInput.value;
-  closePopup(evt.target.closest(".popup"));
+  closePopup(popupEdit);
 }
 
 formEdit.addEventListener("submit", handleProfileFormSubmit);
 
 // функция добавления новой карточки
 
-function createnewCard(evt) {
+function createNewCard(evt) {
   evt.preventDefault();
   renderCard(placeInput.value, linkInput.value);
-  closePopup(evt.target.closest(".popup"));
+  closePopup(popupNewCard);
   evt.target.reset();
 }
 
-formAdd.addEventListener("submit", createnewCard);
+formAdd.addEventListener("submit", createNewCard);
