@@ -16,6 +16,13 @@
   -ms-transition: 0.3s;
   -o-transition: 0.3s;
   transition: 0.3s;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.card__delete-button-active {
+  opacity:1;
+  visibility: visible;
 }
 
 .card__delete-button:hover {

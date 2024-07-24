@@ -8,3 +8,18 @@
   /*Либо с точками из макета, либо этот набор свойств для эллипсиса текста в можно лучше*/
   margin: 0;
 }
+
+.card__like-number {
+  color: black;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 16px;
+  margin-top: 3px;
+}
+
+.card__like{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
