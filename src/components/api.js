@@ -53,20 +53,18 @@ function editProfileApi(link) {
 }
 
 function putLike(cardId) {
-  fetch(`${config.baseUrl}/cards/likes/cardId}`, {
+  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: "PUT",
     headers: config.headers,
   }).then((res) => handleResult(res));
 }
 
 function deleteLike(cardId) {
-  fetch(`${config.baseUrl}/cards/likes/cardId}`, {
+  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: "DELETE",
     headers: config.headers,
   }).then((res) => handleResult(res));
 }
-
-
 
 const cardsApi = fetch(`${config.baseUrl}/cards`, {
   headers: config.headers,

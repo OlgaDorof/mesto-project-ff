@@ -65,8 +65,6 @@ const validation = {
 
 enableValidation(validation);
 
-
-
 //функция добавления картчки в определенное место в списке
 
 function renderCard(card, PrifileId, method = "prepend") {
