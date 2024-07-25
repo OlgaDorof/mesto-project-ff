@@ -1,8 +1,7 @@
 import { putLike, deleteLike } from "./api.js";
 
 const cardTemplate = document.querySelector("#card-template").content;
-const popupDeleteCard = document.querySelector(".popup_type_delete");
-let CardDeleteInform;
+let cardDeleteInform;
 
 // Функция создания карточки
 
@@ -19,8 +18,8 @@ function createCard(card, profileId, callbacksCard) {
   if (card.owner["_id"] === profileId) {
     deleteButton.classList.add("card__delete-button-active");
     deleteButton.addEventListener("click", () => {
-      callbacksCard.openPopup(popupDeleteCard);
-      CardDeleteInform = { cardElement, cardId: card["_id"] };
+      callbacksCard.openCardDeletePopup();
+      cardDeleteInform = { cardElement, cardId: card["_id"] };
     });
   }
 
@@ -62,4 +61,4 @@ function likeCard(card, cardElement) {
   }
 }
 
-export { createCard, likeCard, CardDeleteInform };
+export { createCard, likeCard, cardDeleteInform };

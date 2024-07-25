@@ -1,16 +1,12 @@
 import "./pages/index.css";
-import {
-  createCard,
-  likeCard,
-  CardDeleteInform,
-} from "./components/card.js";
+import { createCard, likeCard, cardDeleteInform } from "./components/card.js";
 import { openPopup, closePopup } from "./components/modal.js";
 import { enableValidation, clearValidation } from "./components/validation.js";
 import {
   deleteCardApi,
-  EditProfileApi,
-  addNewCardApi,
   editProfileApi,
+  addNewCardApi,
+  editProfileAvatarApi,
   cardsApi,
   profileApi,
 } from "./components/api.js";
@@ -52,7 +48,7 @@ const popupImg = document.querySelector(".popup_type_image");
 const imageFullScreen = popupImg.querySelector(".popup__image");
 const popupParagraf = popupImg.querySelector(".popup__caption");
 
-const cardCallbacks = {likeCard, popupImage, openPopup };
+const cardCallbacks = { likeCard, popupImage, openCardDeletePopup };
 
 const validation = {
   formSelector: ".popup__form",
@@ -70,6 +66,10 @@ enableValidation(validation);
 function renderCard(card, PrifileId, method = "prepend") {
   const cardElement = createCard(card, PrifileId, cardCallbacks);
   cardsContainer[method](cardElement);
+}
+
+function openCardDeletePopup() {
+  openPopup(popupDeleteCard)
 }
 
 // функция для открытия большой картинки
@@ -101,22 +101,21 @@ buttonEdit.addEventListener("click", function () {
   jobInput.value = profileDescription.textContent;
   openPopup(popupEdit);
   clearValidation(formEdit, validation);
-  popupEdit.querySelector(".popup__button").textContent = "Сохранить";
 });
 
 // функция удаления карточки
 
-function delCard(CardDeleteInform) {
-  deleteCardApi(CardDeleteInform)
+function delCard(cardDeleteInform) {
+  deleteCardApi(cardDeleteInform)
     .then(() => {
-      CardDeleteInform.cardElement.remove();
+      cardDeleteInform.cardElement.remove();
       closePopup(popupDeleteCard);
     })
     .catch((err) => console.log(err));
 }
 
 formDelete.addEventListener("submit", () => {
-  delCard(CardDeleteInform);
+  delCard(cardDeleteInform);
 });
 
 // нажатие на кружок редактирования аватара
@@ -124,7 +123,6 @@ formDelete.addEventListener("submit", () => {
 buttonProfileAvatar.addEventListener("click", function () {
   openPopup(popupAvatar);
   clearValidation(formEditAvatar, validation);
-  popupAvatar.querySelector(".popup__button").textContent = "Сохранить";
 });
 
 // нажатие на кнопку добавления новой карточки
@@ -132,20 +130,23 @@ buttonProfileAvatar.addEventListener("click", function () {
 buttonAdd.addEventListener("click", function () {
   openPopup(popupNewCard);
   clearValidation(formAdd, validation);
-  popupNewCard.querySelector(".popup__button").textContent = "Создать";
 });
 
 // функция редактирования профиля
 
 function handleProfileFormSubmit(evt) {
-  loading(popupEdit.querySelector(".popup__button"));
-  EditProfileApi(nameInput.value, jobInput.value)
+  const buttonPopupEdit = popupEdit.querySelector(".popup__button");
+  loading(buttonPopupEdit,true,"Сохранить","Сохранение...")
+  editProfileApi(nameInput.value, jobInput.value)
     .then(() => {
       profileTitle.textContent = nameInput.value;
       profileDescription.textContent = jobInput.value;
       closePopup(popupEdit);
     })
-    .catch((err) => console.log(err));
+    .catch((err) => console.log(err))
+    .finally(() => 
+      loading(buttonPopupEdit,false,"Сохранить","Сохранение...")
+    )
 }
 
 formEdit.addEventListener("submit", handleProfileFormSubmit);
@@ -153,20 +154,28 @@ formEdit.addEventListener("submit", handleProfileFormSubmit);
 // функция добавления новой карточки
 
 function createNewCard(evt) {
-  loading(popupNewCard.querySelector(".popup__button"));
+  const buttonPopupNewCard = popupNewCard.querySelector(".popup__button");
+  loading(buttonPopupNewCard,true,"Создать","Создание...")
   addNewCardApi(placeInput.value, linkInput.value)
     .then((card) => {
       renderCard(card, card.owner["_id"]);
       closePopup(popupNewCard);
       evt.target.reset();
     })
-    .catch((err) => console.log(err));
+    .catch((err) => console.log(err))
+    .finally(() => loading(buttonPopupNewCard,false,"Создать","Создание..."))
+
 }
 
 // замена текста на кнопке во время загрузки на сервер
 
-function loading(button) {
-  button.textContent = "Сохранение...";
+function loading(button,boolean,text,textLoad) {
+  if (boolean){
+    button.textContent = textLoad;
+  } else {
+    button.textContent = text;
+  }
+  
 }
 
 formAdd.addEventListener("submit", createNewCard);
@@ -174,23 +183,28 @@ formAdd.addEventListener("submit", createNewCard);
 // функция замены изображения на аватарке
 
 function handleAvatarFormSubmit(evt) {
-  loading(popupAvatar.querySelector(".popup__button"));
-  editProfileApi(linkInputAvatar.value)
+  const buttonPopupAvatar = popupAvatar.querySelector(".popup__button")
+  loading(buttonPopupAvatar,true,"Сохранить","Сохранение...")
+  editProfileAvatarApi(linkInputAvatar.value)
     .then(() => {
       profileAvatar.style = `background-image: url(${linkInputAvatar.value})`;
       closePopup(popupAvatar);
       evt.target.reset();
     })
-    .catch((err) => console.log(err));
+    .catch((err) => console.log(err))
+    .finally(() => loading(buttonPopupAvatar,false,"Сохранить","Сохранение..."))
+
 }
 
 formEditAvatar.addEventListener("submit", handleAvatarFormSubmit);
 
-Promise.all([cardsApi, profileApi]).then(([cardsApi, profileApi]) => {
-  cardsApi.forEach(function (card) {
-    renderCard(card, profileApi["_id"], "append");
-  });
-  profileTitle.textContent = profileApi.name;
-  profileDescription.textContent = profileApi.about;
-  profileAvatar.style = `background-image: url(${profileApi.avatar})`;
-});
+Promise.all([cardsApi, profileApi])
+  .then(([cardsApi, profileApi]) => {
+    cardsApi.forEach(function (card) {
+      renderCard(card, profileApi["_id"], "append");
+    });
+    profileTitle.textContent = profileApi.name;
+    profileDescription.textContent = profileApi.about;
+    profileAvatar.style = `background-image: url(${profileApi.avatar})`;
+  })
+  .catch((err) => console.log(err));

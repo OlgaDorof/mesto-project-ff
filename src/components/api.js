@@ -13,14 +13,14 @@ function handleResult(res) {
   return Promise.reject(`Ошибка: ${res.status}`);
 }
 
-function deleteCardApi(CardDeleteInform) {
-  return fetch(`${config.baseUrl}/cards/${CardDeleteInform.cardId}`, {
+function deleteCardApi(сardDeleteInform) {
+  return fetch(`${config.baseUrl}/cards/${сardDeleteInform.cardId}`, {
     method: "DELETE",
     headers: config.headers,
   }).then((res) => handleResult(res));
 }
 
-function EditProfileApi(name, description) {
+function editProfileApi(name, description) {
   return fetch(`${config.baseUrl}/users/me`, {
     method: "PATCH",
     headers: config.headers,
@@ -42,7 +42,7 @@ function addNewCardApi(name, link) {
   }).then((res) => handleResult(res));
 }
 
-function editProfileApi(link) {
+function editProfileAvatarApi(link) {
   return fetch(`${config.baseUrl}/users/me/avatar`, {
     method: "PATCH",
     headers: config.headers,
@@ -76,9 +76,9 @@ const profileApi = fetch(`${config.baseUrl}//users/me`, {
 
 export {
   deleteCardApi,
-  EditProfileApi,
-  addNewCardApi,
   editProfileApi,
+  addNewCardApi,
+  editProfileAvatarApi,
   cardsApi,
   profileApi,
   putLike,
