@@ -24,7 +24,7 @@ function createCard(card, profileId, callbacksCard) {
   }
 
   const cardLike = cardElement.querySelector(".card__like-button");
-// окрашивание уже лайкнутых сердечек
+  // окрашивание уже лайкнутых сердечек
   card.likes.forEach((like) => {
     if (like["_id"] === profileId) {
       cardLike.classList.add("card__like-button_is-active");

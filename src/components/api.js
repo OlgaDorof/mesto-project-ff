@@ -82,5 +82,5 @@ export {
   cardsApi,
   profileApi,
   putLike,
-  deleteLike
+  deleteLike,
 };

@@ -82,4 +82,4 @@ function clearValidation(formElement, validation) {
   });
 }
 
-export {enableValidation, clearValidation };
+export { enableValidation, clearValidation };
